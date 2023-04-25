@@ -5,5 +5,9 @@ import com.sistemasactivos.msjdbc.model.Account;
 import java.util.List;
 
 public interface AccountDAO {
-    public List<Account> findAll();
+    List<Account> findAll() throws Exception;
+    Account findById(Long id) throws Exception;
+    void save(Account account) throws Exception;
+    void update(Long id, Account account) throws Exception;
+    void delete(Long id) throws Exception;
 }

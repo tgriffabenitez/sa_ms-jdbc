@@ -15,7 +15,32 @@ public class AccountDAOImpl implements AccountDAO {
 
     @Override
     public List<Account> findAll() {
-        return jdbcTemplate.query("SELECT * FROM account", new BeanPropertyRowMapper<>(Account.class));
+        String sql = "SELECT * FROM account";
+        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Account.class));
+    }
+
+    @Override
+    public Account findById(Long id) {
+        String sql = "SELECT * FROM account WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, new Object[]{id}, new BeanPropertyRowMapper<>(Account.class));
+    }
+
+    @Override
+    public void save(Account account) {
+        String sql = "INSERT INTO account (accalias, acctype) VALUES (?, ?)";
+        jdbcTemplate.update(sql, account.getAccalias(), account.getAcctype());
+    }
+
+    @Override
+    public void update(Long id, Account account) {
+        String sql = "UPDATE account SET accalias = ?, acctype = ? WHERE id = ?";
+        jdbcTemplate.update(sql, account.getAccalias(), account.getAcctype(), id);
+    }
+
+    @Override
+    public void delete(Long id) {
+        String sql = "DELETE FROM account WHERE id = ?";
+        jdbcTemplate.update(sql, id);
     }
 
 }
