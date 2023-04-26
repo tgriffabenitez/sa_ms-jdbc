@@ -37,7 +37,7 @@ public class AccountController {
                 throw new IllegalArgumentException("El id no puede ser nulo ni menor o igual a cero");
 
             if (eDAO.findById(id) == null)
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>("No se encontro la entidad", HttpStatus.NOT_FOUND);
 
             return new ResponseEntity<>(eDAO.findById(id), HttpStatus.OK);
 
@@ -76,7 +76,7 @@ public class AccountController {
                 throw new IllegalArgumentException("El id no puede ser nulo ni menor o igual a cero");
 
             if (eDAO.findById(id) == null)
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>("No se encontro la entidad", HttpStatus.NOT_FOUND);
 
             eDAO.update(id, account);
             return new ResponseEntity<>("Cuenta actualizada", HttpStatus.OK);
