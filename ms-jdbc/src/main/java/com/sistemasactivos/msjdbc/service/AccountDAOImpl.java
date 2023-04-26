@@ -22,13 +22,15 @@ public class AccountDAOImpl implements AccountDAO {
     @Override
     public Account findById(Long id) {
         String sql = "SELECT * FROM account WHERE id = ?";
+
+        // Guardo en una lista de account el resultado de la consulta.
         List<Account> accounts = jdbcTemplate.query(sql, new Object[]{id}, new BeanPropertyRowMapper<>(Account.class));
 
-        // Si no se encontro la entidad, devuelvo null
+        // Si la lista esta vacia, quiere decir que no hay ninguna entidad con dicho id
         if (accounts.isEmpty())
             return null;
 
-        // Devuelvo la cuenta encontrada
+        // Devuelvo la entidad encontrada
         return accounts.get(0);
     }
 
@@ -46,11 +48,12 @@ public class AccountDAOImpl implements AccountDAO {
 
     @Override
     public Account update(Long id, Account account) {
-        Account existingAccount = findById(id); // Verificar si existe la entidad (si no existe, devuelvo null)
+        Account existingAccount = findById(id); // Verifico si existe la entidad (si no existe, devuelvo null)
 
         if (existingAccount != null) {
             String sql = "UPDATE account SET accalias = ?, acctype = ? WHERE id = ?";
             jdbcTemplate.update(sql, account.getAccalias(), account.getAcctype(), id);
+            account.setId(id);
             return account;
 
         } else {
@@ -65,10 +68,10 @@ public class AccountDAOImpl implements AccountDAO {
         if (existingAccount != null) {
             String sql = "DELETE FROM account WHERE id = ?";
             int rowsAffected = jdbcTemplate.update(sql, id);
-            return rowsAffected > 0; // Si se eliminó al menos una fila, devolver true
+            return rowsAffected > 0; // Si se eliminó al menos una fila, devuelvo true
 
         } else {
-            return false; // Devolver false si no se realizó la eliminación
+            return false; // Devuelvo false si no se eliminaron filas
         }
     }
 }
