@@ -33,23 +33,42 @@ public class AccountDAOImpl implements AccountDAO {
     }
 
     @Override
-    public void save(Account account) {
+    public Account save(Account account) {
         String sql = "INSERT INTO account (accalias, acctype) VALUES (?, ?)";
         jdbcTemplate.update(sql, account.getAccalias(), account.getAcctype());
+
+        // Obtener el ID generado del registro insertado
+        Long generatedId = jdbcTemplate.queryForObject("SELECT LAST_INSERT_ID()", Long.class);
+        account.setId(generatedId); // Asignar el ID generado a la entidad
+        return account;
+    }
+
+
+    @Override
+    public Account update(Long id, Account account) {
+        Account existingAccount = findById(id); // Verificar si existe la entidad (si no existe, devuelvo null)
+
+        if (existingAccount != null) {
+            String sql = "UPDATE account SET accalias = ?, acctype = ? WHERE id = ?";
+            jdbcTemplate.update(sql, account.getAccalias(), account.getAcctype(), id);
+            return account;
+
+        } else {
+            return null;
+        }
     }
 
     @Override
-    public void update(Long id, Account account) {
-        findById(id); // Verifico si existe la entidad (si no existe, devuelvo null)
-        String sql = "UPDATE account SET accalias = ?, acctype = ? WHERE id = ?";
-        jdbcTemplate.update(sql, account.getAccalias(), account.getAcctype(), id);
-    }
+    public Boolean delete(Long id) {
+        Account existingAccount = findById(id); // Verifico si existe la entidad (si no existe, devuelvo false)
 
-    @Override
-    public void delete(Long id) {
-        findById(id); // Verifico si existe la entidad (si no existe, devuelvo null)
-        String sql = "DELETE FROM account WHERE id = ?";
-        jdbcTemplate.update(sql, id);
-    }
+        if (existingAccount != null) {
+            String sql = "DELETE FROM account WHERE id = ?";
+            int rowsAffected = jdbcTemplate.update(sql, id);
+            return rowsAffected > 0; // Si se eliminó al menos una fila, devolver true
 
+        } else {
+            return false; // Devolver false si no se realizó la eliminación
+        }
+    }
 }

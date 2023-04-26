@@ -55,8 +55,7 @@ public class AccountController {
             if (account == null)
                 throw new IllegalArgumentException("La cuenta no puede ser nula");
 
-            eDAO.save(account);
-            return new ResponseEntity<>("Cuenta creada", HttpStatus.CREATED);
+            return new ResponseEntity<>(eDAO.save(account), HttpStatus.CREATED);
 
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -78,8 +77,7 @@ public class AccountController {
             if (eDAO.findById(id) == null)
                 return new ResponseEntity<>("No se encontro la entidad", HttpStatus.NOT_FOUND);
 
-            eDAO.update(id, account);
-            return new ResponseEntity<>("Cuenta actualizada", HttpStatus.OK);
+            return new ResponseEntity<>(eDAO.update(id, account), HttpStatus.OK);
 
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -92,8 +90,11 @@ public class AccountController {
     @DeleteMapping("/account/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         try {
-            eDAO.delete(id);
-            return new ResponseEntity<>("Cuenta eliminada", HttpStatus.OK);
+            if (eDAO.delete(id))
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+            else
+                return new ResponseEntity<>("No se encontro la entidad", HttpStatus.NOT_FOUND);
 
         } catch (Exception e) {
             return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
