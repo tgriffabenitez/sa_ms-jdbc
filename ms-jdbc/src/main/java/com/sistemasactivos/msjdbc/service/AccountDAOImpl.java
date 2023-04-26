@@ -22,7 +22,14 @@ public class AccountDAOImpl implements AccountDAO {
     @Override
     public Account findById(Long id) {
         String sql = "SELECT * FROM account WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, new Object[]{id}, new BeanPropertyRowMapper<>(Account.class));
+        List<Account> accounts = jdbcTemplate.query(sql, new Object[]{id}, new BeanPropertyRowMapper<>(Account.class));
+
+        // Si no se encontro la entidad, devuelvo null
+        if (accounts.isEmpty())
+            return null;
+
+        // Devuelvo la cuenta encontrada
+        return accounts.get(0);
     }
 
     @Override
@@ -33,12 +40,14 @@ public class AccountDAOImpl implements AccountDAO {
 
     @Override
     public void update(Long id, Account account) {
+        findById(id); // Verifico si existe la entidad (si no existe, devuelvo null)
         String sql = "UPDATE account SET accalias = ?, acctype = ? WHERE id = ?";
         jdbcTemplate.update(sql, account.getAccalias(), account.getAcctype(), id);
     }
 
     @Override
     public void delete(Long id) {
+        findById(id); // Verifico si existe la entidad (si no existe, devuelvo null)
         String sql = "DELETE FROM account WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
